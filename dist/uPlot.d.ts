@@ -32,8 +32,8 @@ declare class uPlot {
 
 	readonly legend: uPlot.Legend;
 
-//	/** focus opts */
-//	readonly focus: uPlot.Focus;
+	//	/** focus opts */
+	//	readonly focus: uPlot.Focus;
 
 	/** series state & opts */
 	readonly series: uPlot.Series[];
@@ -74,14 +74,17 @@ declare class uPlot {
 	setScale(scaleKey: string, limits: { min: number; max: number }): void;
 
 	/** sets the cursor position (relative to plotting area) */
-	setCursor(opts: {left: number, top: number}, fireHook?: boolean): void;
+	setCursor(opts: { left: number; top: number }, fireHook?: boolean): void;
 
 	/** sets the legend to the values of the specified idx */
-	setLegend(opts: {idx: number}, fireHook?: boolean): void;
+	setLegend(opts: { idx: number }, fireHook?: boolean): void;
 
 	// TODO: include other series style opts which are dynamically pulled?
 	/** toggles series visibility or focus */
-	setSeries(seriesIdx: number | null, opts: {show?: boolean, focus?: boolean}): void;
+	setSeries(
+		seriesIdx: number | null,
+		opts: { show?: boolean; focus?: boolean }
+	): void;
 
 	/** adds a series */
 	addSeries(opts: uPlot.Series, seriesIdx?: number): void;
@@ -99,7 +102,10 @@ declare class uPlot {
 	delBand(bandIdx?: number | null): void;
 
 	/** sets visually selected region without triggering setScale (zoom). (default fireHook = true) */
-	setSelect(opts: {left: number, top: number, width: number, height: number}, fireHook?: boolean): void;
+	setSelect(
+		opts: { left: number; top: number; width: number; height: number },
+		fireHook?: boolean
+	): void;
 
 	/** sets the width & height of the plotting area + axes (excludes title & legend height) */
 	setSize(opts: { width: number; height: number }): void;
@@ -126,39 +132,68 @@ declare class uPlot {
 	static assign(targ: object, ...srcs: object[]): object;
 
 	/** re-ranges a given min/max by a multiple of the range's magnitude (used internally to expand/snap/pad numeric y scales) */
-	static rangeNum(min: number, max: number, mult: number, extra: boolean): uPlot.Range.MinMax;
-	static rangeNum(min: number, max: number, cfg: uPlot.Range.Config): uPlot.Range.MinMax;
+	static rangeNum(
+		min: number,
+		max: number,
+		mult: number,
+		extra: boolean
+	): uPlot.Range.MinMax;
+	static rangeNum(
+		min: number,
+		max: number,
+		cfg: uPlot.Range.Config
+	): uPlot.Range.MinMax;
 
 	/** re-ranges a given min/max outwards to nearest 10% of given min/max's magnitudes, unless fullMags = true */
-	static rangeLog(min: number, max: number, base: uPlot.Scale.LogBase, fullMags: boolean): uPlot.Range.MinMax;
+	static rangeLog(
+		min: number,
+		max: number,
+		base: uPlot.Scale.LogBase,
+		fullMags: boolean
+	): uPlot.Range.MinMax;
 
 	/** re-ranges a given min/max outwards to nearest 10% of given min/max's magnitudes, unless fullMags = true */
-	static rangeAsinh(min: number, max: number, base: uPlot.Scale.LogBase, fullMags: boolean): uPlot.Range.MinMax;
+	static rangeAsinh(
+		min: number,
+		max: number,
+		base: uPlot.Scale.LogBase,
+		fullMags: boolean
+	): uPlot.Range.MinMax;
 
 	/** default numeric formatter using browser's locale: new Intl.NumberFormat(navigator.language).format */
 	static fmtNum(val: number): string;
 
 	/** creates an efficient formatter for Date objects from a template string, e.g. {YYYY}-{MM}-{DD} */
-	static fmtDate(tpl: string, names?: uPlot.DateNames): (date: Date) => string;
+	static fmtDate(
+		tpl: string,
+		names?: uPlot.DateNames
+	): (date: Date) => string;
 
 	/** converts a Date into new Date that's time-adjusted for the given IANA Time Zone Name */
 	static tzDate(date: Date, tzName: string): Date;
 
 	/** outerJoins multiple data tables on table[0] values */
-	static join(tables: uPlot.AlignedData[], nullModes?: uPlot.JoinNullMode[][]): uPlot.AlignedData;
+	static join(
+		tables: uPlot.AlignedData[],
+		nullModes?: uPlot.JoinNullMode[][]
+	): uPlot.AlignedData;
 
 	static addGap: uPlot.Series.AddGap;
 
 	static clipGaps: uPlot.Series.ClipPathBuilder;
 
 	/** helper function for grabbing proper drawing orientation vars and fns for a plot instance (all dims in canvas pixels) */
-	static orient(u: uPlot, seriesIdx: number, callback: uPlot.OrientCallback): any;
+	static orient(
+		u: uPlot,
+		seriesIdx: number,
+		callback: uPlot.OrientCallback
+	): any;
 
 	/** returns a pub/sub instance shared by all plots usng the provided key */
 	static sync(key: string): uPlot.SyncPubSub;
 }
 
-export = uPlot;
+export default uPlot;
 
 declare namespace uPlot {
 	type OrientCallback = (
@@ -175,25 +210,72 @@ declare namespace uPlot {
 		yDim: number,
 		moveTo: MoveToH | MoveToV,
 		lineTo: LineToH | LineToV,
-		rect:   RectH   | RectV,
-		arc:    ArcH    | ArcV,
-		bezierCurveTo: BezierCurveToH | BezierCurveToV,
+		rect: RectH | RectV,
+		arc: ArcH | ArcV,
+		bezierCurveTo: BezierCurveToH | BezierCurveToV
 	) => any;
 
-	type ValToPos = (val: number, scale: Scale, fullDim: number, offset: number) => number;
+	type ValToPos = (
+		val: number,
+		scale: Scale,
+		fullDim: number,
+		offset: number
+	) => number;
 
 	type Drawable = Path2D | CanvasRenderingContext2D;
 
-	type MoveToH        = (p: Drawable, x: number, y: number) => void;
-	type MoveToV        = (p: Drawable, y: number, x: number) => void;
-	type LineToH        = (p: Drawable, x: number, y: number) => void;
-	type LineToV        = (p: Drawable, y: number, x: number) => void;
-	type RectH          = (p: Drawable, x: number, y: number, w: number, h: number) => void;
-	type RectV          = (p: Drawable, y: number, x: number, h: number, w: number) => void;
-	type ArcH           = (p: Drawable, x: number, y: number, r: number, startAngle: number, endAngle: number) => void;
-	type ArcV           = (p: Drawable, y: number, x: number, r: number, startAngle: number, endAngle: number) => void;
-	type BezierCurveToH = (p: Drawable, bp1x: number, bp1y: number, bp2x: number, bp2y: number, p2x: number, p2y: number) => void;
-	type BezierCurveToV = (p: Drawable, bp1y: number, bp1x: number, bp2y: number, bp2x: number, p2y: number, p2x: number) => void;
+	type MoveToH = (p: Drawable, x: number, y: number) => void;
+	type MoveToV = (p: Drawable, y: number, x: number) => void;
+	type LineToH = (p: Drawable, x: number, y: number) => void;
+	type LineToV = (p: Drawable, y: number, x: number) => void;
+	type RectH = (
+		p: Drawable,
+		x: number,
+		y: number,
+		w: number,
+		h: number
+	) => void;
+	type RectV = (
+		p: Drawable,
+		y: number,
+		x: number,
+		h: number,
+		w: number
+	) => void;
+	type ArcH = (
+		p: Drawable,
+		x: number,
+		y: number,
+		r: number,
+		startAngle: number,
+		endAngle: number
+	) => void;
+	type ArcV = (
+		p: Drawable,
+		y: number,
+		x: number,
+		r: number,
+		startAngle: number,
+		endAngle: number
+	) => void;
+	type BezierCurveToH = (
+		p: Drawable,
+		bp1x: number,
+		bp1y: number,
+		bp2x: number,
+		bp2y: number,
+		p2x: number,
+		p2y: number
+	) => void;
+	type BezierCurveToV = (
+		p: Drawable,
+		bp1y: number,
+		bp1x: number,
+		bp2y: number,
+		bp2x: number,
+		p2y: number,
+		p2x: number
+	) => void;
 
 	export const enum JoinNullMode {
 		/** use for series with spanGaps: true */
@@ -206,32 +288,37 @@ declare namespace uPlot {
 
 	export const enum Orientation {
 		Horizontal = 0,
-		Vertical   = 1,
+		Vertical = 1,
 	}
 
 	export type AlignedData = [
 		xValues: number[],
-		...yValues: (number | null | undefined)[][],
-	]
+		...yValues: (number | null | undefined)[][]
+	];
 
 	export interface DateNames {
 		/** long month names */
 		MMMM: string[];
 
 		/** short month names */
-		MMM:  string[];
+		MMM: string[];
 
 		/** long weekday names (0: Sunday) */
 		WWWW: string[];
 
 		/** short weekday names (0: Sun) */
-		WWW:  string[];
+		WWW: string[];
 	}
 
 	export namespace Range {
 		export type MinMax = [min: number | null, max: number | null];
 
-		export type Function = (self: uPlot, initMin: number, initMax: number, scaleKey: string) => MinMax;
+		export type Function = (
+			self: uPlot,
+			initMin: number,
+			initMax: number,
+			scaleKey: string
+		) => MinMax;
 
 		export type SoftMode = 0 | 1 | 2 | 3;
 
@@ -259,16 +346,34 @@ declare namespace uPlot {
 		[key: string]: Scale;
 	}
 
-	type SidesWithAxes = [top: boolean, right: boolean, bottom: boolean, left: boolean];
+	type SidesWithAxes = [
+		top: boolean,
+		right: boolean,
+		bottom: boolean,
+		left: boolean
+	];
 
-	export type PaddingSide = number | null | ((self: uPlot, side: Axis.Side, sidesWithAxes: SidesWithAxes, cycleNum: number) => number);
+	export type PaddingSide =
+		| number
+		| null
+		| ((
+				self: uPlot,
+				side: Axis.Side,
+				sidesWithAxes: SidesWithAxes,
+				cycleNum: number
+		  ) => number);
 
-	export type Padding = [top: PaddingSide, right: PaddingSide, bottom: PaddingSide, left: PaddingSide];
+	export type Padding = [
+		top: PaddingSide,
+		right: PaddingSide,
+		bottom: PaddingSide,
+		left: PaddingSide
+	];
 
 	export interface Legend {
-		show?: boolean;	// true
+		show?: boolean; // true
 		/** show series values at current cursor.idx */
-		live?: boolean;	// true
+		live?: boolean; // true
 		/** swiches primary interaction mode to toggle-one/toggle-all */
 		isolate?: boolean; // false
 		/** series indicators */
@@ -281,22 +386,39 @@ declare namespace uPlot {
 	}
 
 	export namespace Legend {
-		export type Width  = number | ((self: uPlot, seriesIdx: number) => number);
+		export type Width =
+			| number
+			| ((self: uPlot, seriesIdx: number) => number);
 
-		export type Stroke = CSSStyleDeclaration['borderColor'] | ((self: uPlot, seriesIdx: number) => CSSStyleDeclaration['borderColor']);
+		export type Stroke =
+			| CSSStyleDeclaration["borderColor"]
+			| ((
+					self: uPlot,
+					seriesIdx: number
+			  ) => CSSStyleDeclaration["borderColor"]);
 
-		export type Dash   = CSSStyleDeclaration['borderStyle'] | ((self: uPlot, seriesIdx: number) => CSSStyleDeclaration['borderStyle']);
+		export type Dash =
+			| CSSStyleDeclaration["borderStyle"]
+			| ((
+					self: uPlot,
+					seriesIdx: number
+			  ) => CSSStyleDeclaration["borderStyle"]);
 
-		export type Fill   = CSSStyleDeclaration['background']  | ((self: uPlot, seriesIdx: number) => CSSStyleDeclaration['background']);
+		export type Fill =
+			| CSSStyleDeclaration["background"]
+			| ((
+					self: uPlot,
+					seriesIdx: number
+			  ) => CSSStyleDeclaration["background"]);
 
-		export type Value  = {
+		export type Value = {
 			[key: string]: string | number;
 		};
 
 		export type Values = Value[];
 
 		export interface Markers {
-			show?: boolean;	// true
+			show?: boolean; // true
 			/** series indicator line width */
 			width?: Legend.Width;
 			/** series indicator stroke (CSS borderColor) */
@@ -313,8 +435,8 @@ declare namespace uPlot {
 	export type LocalDateFromUnix = (ts: number) => Date;
 
 	export const enum DrawOrderKey {
-		Axes   = 'axes',
-		Series = 'series',
+		Axes = "axes",
+		Series = "series",
 	}
 
 	export interface Options {
@@ -394,55 +516,92 @@ declare namespace uPlot {
 	}
 
 	export interface SyncPubSub {
-		key:   string;
-		sub:   (client: uPlot) => void;
+		key: string;
+		sub: (client: uPlot) => void;
 		unsub: (client: uPlot) => void;
-		pub:   (type: string, client: uPlot, x: number, y: number, w: number, h: number, i: number) => void;
+		pub: (
+			type: string,
+			client: uPlot,
+			x: number,
+			y: number,
+			w: number,
+			h: number,
+			i: number
+		) => void;
 		plots: uPlot[];
 	}
 
 	export namespace Cursor {
-		export type LeftTop              = [left: number, top: number];
+		export type LeftTop = [left: number, top: number];
 
-		export type MouseListener        = (e: MouseEvent) => null;
+		export type MouseListener = (e: MouseEvent) => null;
 
-		export type MouseListenerFactory = (self: uPlot, targ: HTMLElement, handler: MouseListener) => MouseListener | null;
+		export type MouseListenerFactory = (
+			self: uPlot,
+			targ: HTMLElement,
+			handler: MouseListener
+		) => MouseListener | null;
 
-		export type DataIdxRefiner       = (self: uPlot, seriesIdx: number, closestIdx: number, xValue: number) => number;
+		export type DataIdxRefiner = (
+			self: uPlot,
+			seriesIdx: number,
+			closestIdx: number,
+			xValue: number
+		) => number;
 
-		export type MousePosRefiner      = (self: uPlot, mouseLeft: number, mouseTop: number) => LeftTop;
+		export type MousePosRefiner = (
+			self: uPlot,
+			mouseLeft: number,
+			mouseTop: number
+		) => LeftTop;
 
 		export interface Bind {
-			mousedown?:   MouseListenerFactory;
-			mouseup?:     MouseListenerFactory;
-			click?:       MouseListenerFactory;
-			dblclick?:    MouseListenerFactory;
+			mousedown?: MouseListenerFactory;
+			mouseup?: MouseListenerFactory;
+			click?: MouseListenerFactory;
+			dblclick?: MouseListenerFactory;
 
-			mousemove?:   MouseListenerFactory;
-			mouseleave?:  MouseListenerFactory;
-			mouseenter?:  MouseListenerFactory;
+			mousemove?: MouseListenerFactory;
+			mouseleave?: MouseListenerFactory;
+			mouseenter?: MouseListenerFactory;
 		}
 
 		export namespace Points {
-			export type Show   = boolean | ((self: uPlot, seriesIdx: number) => HTMLElement);
-			export type Size   = number  | ((self: uPlot, seriesIdx: number) => number);
-			export type Width  = number  | ((self: uPlot, seriesIdx: number, size: number) => number);
-			export type Stroke = CanvasRenderingContext2D['strokeStyle'] | ((self: uPlot, seriesIdx: number) => CanvasRenderingContext2D['strokeStyle']);
-			export type Fill   = CanvasRenderingContext2D['fillStyle']   | ((self: uPlot, seriesIdx: number) => CanvasRenderingContext2D['fillStyle']);
+			export type Show =
+				| boolean
+				| ((self: uPlot, seriesIdx: number) => HTMLElement);
+			export type Size =
+				| number
+				| ((self: uPlot, seriesIdx: number) => number);
+			export type Width =
+				| number
+				| ((self: uPlot, seriesIdx: number, size: number) => number);
+			export type Stroke =
+				| CanvasRenderingContext2D["strokeStyle"]
+				| ((
+						self: uPlot,
+						seriesIdx: number
+				  ) => CanvasRenderingContext2D["strokeStyle"]);
+			export type Fill =
+				| CanvasRenderingContext2D["fillStyle"]
+				| ((
+						self: uPlot,
+						seriesIdx: number
+				  ) => CanvasRenderingContext2D["fillStyle"]);
 		}
 
 		export interface Points {
-			show?:   Points.Show;
+			show?: Points.Show;
 			/** if false, will update stroke() and fill() on every cursor move for every series (expensive!) */
 			static?: boolean; // true
 			/** hover point diameter in CSS pixels */
-			size?:   Points.Size;
+			size?: Points.Size;
 			/** hover point outline width in CSS pixels */
-			width?:  Points.Width;
+			width?: Points.Width;
 			/** hover point outline color, pattern or gradient */
 			stroke?: Points.Stroke;
 			/** hover point fill color, pattern or gradient */
-			fill?:   Points.Fill;
+			fill?: Points.Fill;
 		}
 
 		export interface Drag {
@@ -460,7 +619,15 @@ declare namespace uPlot {
 		export namespace Sync {
 			export type Scales = [xScaleKey: string, yScaleKey: string];
 
-			export type Filter = (type: string, client: uPlot, x: number, y: number, w: number, h: number, i: number) => boolean;
+			export type Filter = (
+				type: string,
+				client: uPlot,
+				x: number,
+				y: number,
+				w: number,
+				h: number,
+				i: number
+			) => boolean;
 
 			export interface Filters {
 				/** filters emitted events */
@@ -469,9 +636,15 @@ declare namespace uPlot {
 				sub?: Filter;
 			}
 
-			export type ScaleKeyMatcher = (subScaleKey: string | null, pubScaleKey: string | null) => boolean;
+			export type ScaleKeyMatcher = (
+				subScaleKey: string | null,
+				pubScaleKey: string | null
+			) => boolean;
 
-			export type Match = [matchX: ScaleKeyMatcher, matchY: ScaleKeyMatcher];
+			export type Match = [
+				matchX: ScaleKeyMatcher,
+				matchY: ScaleKeyMatcher
+			];
 
 			export type Values = [xScaleValue: number, yScaleValue: number];
 		}
@@ -488,7 +661,7 @@ declare namespace uPlot {
 			/** event filters */
 			filters?: Sync.Filters;
 			/** sync scales' values at the cursor position (exposed for read-back by subscribers) */
-			values?: Sync.Values,
+			values?: Sync.Values;
 		}
 
 		export interface Focus {
@@ -545,20 +718,30 @@ declare namespace uPlot {
 	}
 
 	export namespace Scale {
-		export type Auto = boolean | ((self: uPlot, resetScales: boolean) => boolean);
+		export type Auto =
+			| boolean
+			| ((self: uPlot, resetScales: boolean) => boolean);
 
 		export type Range = Range.MinMax | Range.Function | Range.Config;
 
 		export const enum Distr {
-			Linear      = 1,
-			Ordinal     = 2,
+			Linear = 1,
+			Ordinal = 2,
 			Logarithmic = 3,
-			ArcSinh     = 4,
+			ArcSinh = 4,
 		}
 
 		export type LogBase = 10 | 2;
 
-		export type Clamp = number | ((self: uPlot, val: number, scaleMin: number, scaleMax: number, scaleKey: string) => number);
+		export type Clamp =
+			| number
+			| ((
+					self: uPlot,
+					val: number,
+					scaleMin: number,
+					scaleMax: number,
+					scaleKey: string
+			  ) => number);
 	}
 
 	export interface Scale {
@@ -611,7 +794,7 @@ declare namespace uPlot {
 			clip?: Path2D | null;
 
 			/** an upwards clip built using the stroke path */
-			band? : Path2D | null;
+			band?: Path2D | null;
 
 			/** tuples of canvas pixel coordinates that were used to construct the gaps clip */
 			gaps?: [from: number, to: number][];
@@ -636,28 +819,57 @@ declare namespace uPlot {
 			gap?: number;
 		}
 
-		export type LinearPathBuilderFactory  = () => Series.PathBuilder;
-		export type SplinePathBuilderFactory  = () => Series.PathBuilder;
-		export type SteppedPathBuilderFactory = (opts?: SteppedPathBuilderOpts) => Series.PathBuilder;
-		export type BarsPathBuilderFactory    = (opts?: BarsPathBuilderOpts) => Series.PathBuilder;
+		export type LinearPathBuilderFactory = () => Series.PathBuilder;
+		export type SplinePathBuilderFactory = () => Series.PathBuilder;
+		export type SteppedPathBuilderFactory = (
+			opts?: SteppedPathBuilderOpts
+		) => Series.PathBuilder;
+		export type BarsPathBuilderFactory = (
+			opts?: BarsPathBuilderOpts
+		) => Series.PathBuilder;
 
 		export interface PathBuilderFactories {
-			linear?:  LinearPathBuilderFactory;
-			spline?:  SplinePathBuilderFactory;
+			linear?: LinearPathBuilderFactory;
+			spline?: SplinePathBuilderFactory;
 			stepped?: SteppedPathBuilderFactory;
-			bars?:    BarsPathBuilderFactory;
+			bars?: BarsPathBuilderFactory;
 		}
 
-		export type Stroke = CanvasRenderingContext2D['strokeStyle'] | ((self: uPlot, seriesIdx: number) => CanvasRenderingContext2D['strokeStyle']);
+		export type Stroke =
+			| CanvasRenderingContext2D["strokeStyle"]
+			| ((
+					self: uPlot,
+					seriesIdx: number
+			  ) => CanvasRenderingContext2D["strokeStyle"]);
 
-		export type Fill = CanvasRenderingContext2D['fillStyle'] | ((self: uPlot, seriesIdx: number) => CanvasRenderingContext2D['fillStyle']);
+		export type Fill =
+			| CanvasRenderingContext2D["fillStyle"]
+			| ((
+					self: uPlot,
+					seriesIdx: number
+			  ) => CanvasRenderingContext2D["fillStyle"]);
 
-		export type Cap = CanvasRenderingContext2D['lineCap'];
+		export type Cap = CanvasRenderingContext2D["lineCap"];
 
 		export namespace Points {
-			export type Show = boolean | ((self: uPlot, seriesIdx: number, idx0: number, idx1: number) => boolean | undefined);
+			export type Show =
+				| boolean
+				| ((
+						self: uPlot,
+						seriesIdx: number,
+						idx0: number,
+						idx1: number
+				  ) => boolean | undefined);
 
-			export type Filter = number[] | null | ((self: uPlot, seriesIdx: number, show: boolean, gaps?: null | number[][]) => number[] | null);
+			export type Filter =
+				| number[]
+				| null
+				| ((
+						self: uPlot,
+						seriesIdx: number,
+						show: boolean,
+						gaps?: null | number[][]
+				  ) => number[] | null);
 		}
 
 		export interface Points {
@@ -695,22 +907,52 @@ declare namespace uPlot {
 
 		export type AddGap = (gaps: Gaps, from: number, to: number) => void;
 
-		export type ClipPathBuilder = (gaps: Gaps, ori: Orientation, left: number, top: number, width: number, height: number) => Path2D | null;
+		export type ClipPathBuilder = (
+			gaps: Gaps,
+			ori: Orientation,
+			left: number,
+			top: number,
+			width: number,
+			height: number
+		) => Path2D | null;
 
-		export type PathBuilder = (self: uPlot, seriesIdx: number, idx0: number, idx1: number) => Paths | null;
+		export type PathBuilder = (
+			self: uPlot,
+			seriesIdx: number,
+			idx0: number,
+			idx1: number
+		) => Paths | null;
 
 		export type MinMaxIdxs = [minIdx: number, maxIdx: number];
 
-		export type Value = string | ((self: uPlot, rawValue: number, seriesIdx: number, idx: number) => string | number);
+		export type Value =
+			| string
+			| ((
+					self: uPlot,
+					rawValue: number,
+					seriesIdx: number,
+					idx: number
+			  ) => string | number);
 
-		export type Values = (self: uPlot, seriesIdx: number, idx: number) => object;
+		export type Values = (
+			self: uPlot,
+			seriesIdx: number,
+			idx: number
+		) => object;
 
-		export type FillTo = number | ((self: uPlot, seriesIdx: number, dataMin: number, dataMax: number) => number);
+		export type FillTo =
+			| number
+			| ((
+					self: uPlot,
+					seriesIdx: number,
+					dataMin: number,
+					dataMax: number
+			  ) => number);
 
 		export const enum Sorted {
-			Unsorted    =  0,
-			Ascending   =  1,
-			Descending  = -1,
+			Unsorted = 0,
+			Ascending = 1,
+			Descending = -1,
 		}
 	}
 
@@ -782,14 +1024,20 @@ declare namespace uPlot {
 	}
 
 	export namespace Band {
-		export type Fill = CanvasRenderingContext2D['fillStyle'] | ((self: uPlot, bandIdx: number, highSeriesFill: CanvasRenderingContext2D['fillStyle']) => CanvasRenderingContext2D['fillStyle']);
+		export type Fill =
+			| CanvasRenderingContext2D["fillStyle"]
+			| ((
+					self: uPlot,
+					bandIdx: number,
+					highSeriesFill: CanvasRenderingContext2D["fillStyle"]
+			  ) => CanvasRenderingContext2D["fillStyle"]);
 
 		export type Bounds = [highSeriesIdx: number, lowSeriesIdx: number];
 	}
 
 	export interface Band {
 		/** band on/off */
-	//	show?: boolean;
+		//	show?: boolean;
 
 		/** series indices of upper and lower band edges */
 		series: Band.Bounds;
@@ -800,41 +1048,102 @@ declare namespace uPlot {
 
 	export namespace Axis {
 		/** must return an array of same length as splits, e.g. via splits.map() */
-		export type Filter = (self: uPlot, splits: number[], axisIdx: number, foundSpace: number, foundIncr: number) => (number | null)[];
+		export type Filter = (
+			self: uPlot,
+			splits: number[],
+			axisIdx: number,
+			foundSpace: number,
+			foundIncr: number
+		) => (number | null)[];
 
-		export type Size = number | ((self: uPlot, values: string[], axisIdx: number, cycleNum: number) => number);
+		export type Size =
+			| number
+			| ((
+					self: uPlot,
+					values: string[],
+					axisIdx: number,
+					cycleNum: number
+			  ) => number);
 
-		export type Space = number | ((self: uPlot, axisIdx: number, scaleMin: number, scaleMax: number, plotDim: number) => number);
+		export type Space =
+			| number
+			| ((
+					self: uPlot,
+					axisIdx: number,
+					scaleMin: number,
+					scaleMax: number,
+					plotDim: number
+			  ) => number);
 
-		export type Incrs = number[] | ((self: uPlot, axisIdx: number, scaleMin: number, scaleMax: number, fullDim: number, minSpace: number) => number[]);
+		export type Incrs =
+			| number[]
+			| ((
+					self: uPlot,
+					axisIdx: number,
+					scaleMin: number,
+					scaleMax: number,
+					fullDim: number,
+					minSpace: number
+			  ) => number[]);
 
-		export type Splits = number[] | ((self: uPlot, axisIdx: number, scaleMin: number, scaleMax: number, foundIncr: number, foundSpace: number) => number[]);
+		export type Splits =
+			| number[]
+			| ((
+					self: uPlot,
+					axisIdx: number,
+					scaleMin: number,
+					scaleMax: number,
+					foundIncr: number,
+					foundSpace: number
+			  ) => number[]);
 
 		export type StaticValues = (string | number | null)[];
 
-		export type DynamicValues = (self: uPlot, splits: number[], axisIdx: number, foundSpace: number, foundIncr: number) => StaticValues;
+		export type DynamicValues = (
+			self: uPlot,
+			splits: number[],
+			axisIdx: number,
+			foundSpace: number,
+			foundIncr: number
+		) => StaticValues;
 
 		export type TimeValuesConfig = (string | number | null)[][];
 
 		export type TimeValuesTpl = string;
 
-		export type Values = StaticValues | DynamicValues | TimeValuesTpl | TimeValuesConfig;
+		export type Values =
+			| StaticValues
+			| DynamicValues
+			| TimeValuesTpl
+			| TimeValuesConfig;
 
-		export type Stroke = CanvasRenderingContext2D['strokeStyle'] | ((self: uPlot, axisIdx: number) => CanvasRenderingContext2D['strokeStyle']);
+		export type Stroke =
+			| CanvasRenderingContext2D["strokeStyle"]
+			| ((
+					self: uPlot,
+					axisIdx: number
+			  ) => CanvasRenderingContext2D["strokeStyle"]);
 
 		export const enum Side {
-			Top    = 0,
-			Right  = 1,
+			Top = 0,
+			Right = 1,
 			Bottom = 2,
-			Left   = 3,
+			Left = 3,
 		}
 
 		export const enum Align {
-			Left  = 1,
+			Left = 1,
 			Right = 2,
 		}
 
-		export type Rotate = number | ((self: uPlot, values: (string | number)[], axisIdx: number, foundSpace: number) => number);
+		export type Rotate =
+			| number
+			| ((
+					self: uPlot,
+					values: (string | number)[],
+					axisIdx: number,
+					foundSpace: number
+			  ) => number);
 
 		export interface Grid {
 			/** on/off */
@@ -879,7 +1188,7 @@ declare namespace uPlot {
 		gap?: number;
 
 		/** font used for axis values */
-		font?: CanvasRenderingContext2D['font'];
+		font?: CanvasRenderingContext2D["font"];
 
 		/** color of axis label & values */
 		stroke?: Axis.Stroke;
@@ -894,7 +1203,7 @@ declare namespace uPlot {
 		labelGap?: number;
 
 		/** font used for axis label */
-		labelFont?: CanvasRenderingContext2D['font'];
+		labelFont?: CanvasRenderingContext2D["font"];
 
 		/** minimum grid & tick spacing in CSS pixels */
 		space?: Axis.Space;
@@ -927,58 +1236,62 @@ declare namespace uPlot {
 	export namespace Hooks {
 		export interface Defs {
 			/** fires after opts are defaulted & merged but data has not been set and scales have not been ranged */
-			init?:       (self: uPlot, opts: Options, data: AlignedData) => void;
+			init?: (self: uPlot, opts: Options, data: AlignedData) => void;
 
 			/** fires after any scale has changed */
-			setScale?:   (self: uPlot, scaleKey: string) => void;
+			setScale?: (self: uPlot, scaleKey: string) => void;
 
 			/** fires after the cursor is moved */
-			setCursor?:  (self: uPlot) => void;
+			setCursor?: (self: uPlot) => void;
 
 			/** fires when cursor changes idx and legend updates (or should update) */
-			setLegend?:  (self: uPlot) => void;
+			setLegend?: (self: uPlot) => void;
 
 			/** fires after a selection is completed */
-			setSelect?:  (self: uPlot) => void;
+			setSelect?: (self: uPlot) => void;
 
 			/** fires after a series is toggled or focused */
-			setSeries?:  (self: uPlot, seriesIdx: number | null, opts: Series) => void;
+			setSeries?: (
+				self: uPlot,
+				seriesIdx: number | null,
+				opts: Series
+			) => void;
 
 			/** fires after data is updated updated */
-			setData?:    (self: uPlot) => void;
+			setData?: (self: uPlot) => void;
 
 			/** fires after the chart is resized */
-			setSize?:    (self: uPlot) => void;
+			setSize?: (self: uPlot) => void;
 
 			/** fires at start of every redraw */
-			drawClear?:  (self: uPlot) => void;
+			drawClear?: (self: uPlot) => void;
 
 			/** fires after all axes are drawn */
-			drawAxes?:   (self: uPlot) => void;
+			drawAxes?: (self: uPlot) => void;
 
 			/** fires after each series is drawn */
 			drawSeries?: (self: uPlot, seriesIdx: number) => void;
 
 			/** fires after everything is drawn */
-			draw?:       (self: uPlot) => void;
+			draw?: (self: uPlot) => void;
 
 			/** fires after the chart is fully initialized and in the DOM */
-			ready?:      (self: uPlot) => void;
+			ready?: (self: uPlot) => void;
 
 			/** fires after the chart is destroyed */
-			destroy?:    (self: uPlot) => void;
+			destroy?: (self: uPlot) => void;
 
 			/** fires after .u-over's getBoundingClientRect() is called (due to scroll or resize events) */
-			syncRect?:   (self: uPlot, rect: DOMRect) => void;
+			syncRect?: (self: uPlot, rect: DOMRect) => void;
 		}
 
 		export type Arrays = {
-			[P in keyof Defs]: Defs[P][]
-		}
+			[P in keyof Defs]: Defs[P][];
+		};
 
 		export type ArraysOrFuncs = {
-			[P in keyof Defs]: Defs[P][] | Defs[P]
-		}
+			[P in keyof Defs]: Defs[P][] | Defs[P];
+		};
 	}
 
 	export interface Plugin {
